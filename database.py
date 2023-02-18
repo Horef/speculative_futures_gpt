@@ -24,6 +24,7 @@ class DatabaseManager:
         # Reading the database settings.
         self.db_name = config.get("Database Settings", "database_name")
         self.table_name = config.get("Database Settings", "table_name")
+        self.clear = config.getboolean("Database Settings", "clear_db")
 
         # Connecting to the database.
         self.conn = sqlite3.connect(self.db_name)
@@ -136,5 +137,9 @@ class DatabaseManager:
         cursor = self.conn.cursor()
         cursor.execute(f"""
         DELETE FROM {table}
+        """)
+        # Reset the autoincrement.
+        cursor.execute(f"""
+        DELETE FROM sqlite_sequence WHERE name='{table}'
         """)
         self.conn.commit()

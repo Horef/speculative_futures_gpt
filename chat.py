@@ -13,8 +13,9 @@ class Chat:
         config.read("settings/config.ini")
 
         # Loading the settings.
-        self.temperature = float(config.get("Gpt3 Settings", "temperature"))
+        self.temperature = config.getfloat("Gpt3 Settings", "temperature")
         self.api_key_path = config.get("Gpt3 Settings", "api_key_path")
+        self.max_tokens = config.getint("Gpt3 Settings", "max_tokens")
 
         self.db = dbm()
 
@@ -23,35 +24,36 @@ class Chat:
             model="text-davinci-003",
             prompt=self.generate_prompt_multiple(past=past, present=present),
             temperature=self.temperature,
+            max_tokens=self.max_tokens,
         )
         return response.choices[0].text.strip()
 
     def generate_prompt_single(self, present: str):
         return f"""
-        Summarize the following text into a coherent story, but add as little information as possible.
+        Summarize the following text into a concise idea, but try to keep as many specific names or details as possible.
         
-        Text A: We have certain problems with our social norms and as a solution I would propose gradually lowering the confines imposed upon the moral values of the population.
-        Summarization: A possible solution to problems with social norms would be to gradually lower the confines imposed upon the moral values of the population.
-        Text A: {present}
-        Summarization:
+        Text: {present}.
+        Answer:
         """
 
     def generate_prompt_multiple(self, past, present):
         if past is None:
             return self.generate_prompt_single(present)
         return f"""
-        Summarize the following two texts into a coherent story, but add as little information as possible.
-        
-        Text A: We have certain problems with our social norms and as a solution I would propose gradually lowering the confines imposed upon the moral values of the population.
-        Text B: I would suggest we start by slowly changing the way we teach our children about the world, and only then to lowering the confines.
-        Summarization: A possible solution to problems with social norms would be to start by changing the educational system, and then gradually lower the confines imposed upon the moral values of the population.
-        Text A: {past}
-        Text B: {present}
-        Summarization:
+        Combine and summarize the following two parts of a text into one concise idea.
+        But try to keep as many specific names or details as possible.
+        Point out logical inconsistencies if such exist.
+
+        Part A: {past}.
+        Part B: {present}.
+        Answer:
         """
 
 if __name__ == "__main__":
     chat = Chat()
+
+    if chat.db.clear:
+        chat.db.clear_table()
 
     # Setting up the API key.
     openai.api_key_path = chat.api_key_path
