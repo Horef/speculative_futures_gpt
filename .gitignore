@@ -2,7 +2,7 @@
 *.db
 
 # Ignore api_key file.
-api_key
+api_key.txt
 
 # Ignore pycache.
 __pycache__/
