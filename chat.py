@@ -1,4 +1,5 @@
-import sqlite3
+from math import ceil
+
 from database import DatabaseManager as dbm
 import text_processing as tp
 
@@ -17,6 +18,8 @@ class Chat:
         self.api_key_path = config.get("Gpt3 Settings", "api_key_path")
         self.max_tokens = config.getint("Gpt3 Settings", "max_tokens")
 
+        self.completion_length = self.max_tokens
+
         self.db = dbm()
 
     def generate_future(self, past: str, present: str):
@@ -24,13 +27,13 @@ class Chat:
             model="text-davinci-003",
             prompt=self.generate_prompt_multiple(past=past, present=present),
             temperature=self.temperature,
-            max_tokens=self.max_tokens,
+            max_tokens=self.completion_length,
         )
         return response.choices[0].text.strip()
 
     def generate_prompt_single(self, present: str):
         return f"""
-        Summarize the following text into a concise idea, but try to keep as many specific names or details as possible.
+        Summarize the following text into a clear idea. Try to be as specific and detailed as possible.
         
         Text: {present}.
         Answer:
@@ -38,16 +41,25 @@ class Chat:
 
     def generate_prompt_multiple(self, past, present):
         if past is None:
-            return self.generate_prompt_single(present)
-        return f"""
-        Combine and summarize the following two parts of a text into one concise idea.
-        But try to keep as many specific names or details as possible.
-        Point out logical inconsistencies if such exist.
+            prompt = self.generate_prompt_single(present)
+        else:
+            prompt = f"""
+            Combine the following two parts of a text into one clear idea.
+            Try to be as specific and detailed as possible.
+            Point out logical inconsistencies if such exist.
 
-        Part A: {past}.
-        Part B: {present}.
-        Answer:
-        """
+            Part A: {past}.
+            Part B: {present}.
+            Answer:
+            """
+
+        # Calculate the number of tokens we pass into the gpt.
+        # The number is always bigger than the actual tokenization, but it doesn't return an error this way.
+        tokens_by_chars: int = ceil(len(prompt)/4)
+
+        self.completion_length = self.max_tokens - tokens_by_chars
+
+        return prompt
 
 if __name__ == "__main__":
     chat = Chat()
@@ -64,8 +76,8 @@ if __name__ == "__main__":
     while name != "exit":
         text = input("Your opinion: ")
         chat.db.insert_db(name=name, text=tp.preprocess(text))
-        print(f"Inserted into db: name:{name}, text:{text}")
 
+        # Run GPT-3
         summarization = chat.generate_future(past=past, present=text)
         print(f"gpt3 returned: {summarization}")
         chat.db.insert_db(name="gpt3", text=tp.preprocess(summarization))
@@ -75,5 +87,5 @@ if __name__ == "__main__":
         for (id, name, text, timestamp) in history:
             print(f"Id:{id}, time:{timestamp}, {name}: {text}")
 
-        previous = summarization
-        name = input("Name: ")
+        past = summarization
+        name = input("\nName: ")
