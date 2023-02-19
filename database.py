@@ -30,6 +30,11 @@ class DatabaseManager:
         self.conn = sqlite3.connect(self.db_name)
         self.cursor = self.conn.cursor()
 
+        # Creating the table if it doesn't exist.
+        if config.getboolean("Database Settings", "first_run"):
+            self.create_table()
+            config.set("Database Settings", "first_run", "False")
+
     def create_table(self, *args) -> None:
         """
         Creates a table in the database with the name specified in the config file.

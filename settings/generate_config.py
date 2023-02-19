@@ -1,26 +1,32 @@
 import configparser
 
-# Create a config parser object
-config_file = configparser.ConfigParser()
+def generate_settings():
+    """
+    Generates setting for all of the chat properties.
+    """
 
+    # Create a config parser object
+    config_file = configparser.ConfigParser()
 
-# Add Database Settings section to the config file
-config_file.add_section('Database Settings')
-# Add settings to the section
-config_file.set('Database Settings', 'database_name', 'chat.db')
-config_file.set('Database Settings', 'table_name', 'chat')
-config_file.set('Database Settings', 'clear_db','True')
+    # Database Settings section
+    config_file['Database Settings']={
+        'database_name': 'chat.db',
+        'table_name': 'chat',
+        'clear_db': 'True',
+        'first_run': 'True'
+    }
 
-# Add Gpt3 Settings section to the config file
-config_file.add_section('Gpt3 Settings')
-# Add settings to the section
-config_file.set('Gpt3 Settings', 'api_key_path', 'api_key.txt')
-config_file.set('Gpt3 Settings', 'temperature', '0.3')
+    # Gpt3 Settings section
+    config_file['Gpt3 Settings'] = {
+        'api_key_path': 'api_key.txt',
+        'temperature': '0.3',
+        'max_tokens': '4090'
+    }
 
-# Commit and push
-with open(r"settings/config.ini", "w") as file:
-    config_file.write(file)
-    file.flush()
-    file.close()
+    # Commit and push
+    with open(r"settings/config.ini", "w") as file:
+        config_file.write(file)
+        file.flush()
+        file.close()
 
-print("Config file created successfully")
+    print("Config file created successfully")
