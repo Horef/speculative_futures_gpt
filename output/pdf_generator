@@ -1,0 +1,34 @@
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+
+import configparser
+
+class PdfGenerator():
+    def __init__(self):
+        self.config = configparser.ConfigParser()
+        self.config.read("settings/config.ini")
+
+        self.pdf_name = self.config.get("PDF Generator Settings", "pdf_name")
+
+        self.pdf = canvas.Canvas(self.pdf_name, pagesize=A4)
+        if self.config.getboolean("PDF Generator Settings", "encryption"):
+            self.pdf.encrypt(self.config.get("PDF Generator Settings", "password"))
+        self.width, self.height = A4
+        self.pdf.setTitle(self.config.get("PDF Generator Settings", "document_title"))
+
+        self.textobject = self.pdf.beginText()
+        self.textobject.setTextOrigin(10, self.height - 10)
+        self.textobject.setFont("Helvetica", 14)
+
+    def add_text_multiline(self, text: str):
+        self.textobject.textLines(text)
+        self.pdf.drawString()
+
+    def add_text_singleline(self, text: str):
+        self.textobject.textLine(text)
+        self.pdf.drawString()
+
+    def save_pdf(self):
+        self.pdf.save()

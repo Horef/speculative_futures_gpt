@@ -23,6 +23,15 @@ def generate_settings():
         'max_tokens': '4090'
     }
 
+    # PDF Generator Settings section
+    config_file['PDF Generator Settings'] = {
+        'pdf_name': 'output/chat_results.pdf',
+        'document_title': 'Chat Results',
+        'title': 'Chat Results',
+        'encryption': 'False',
+        'password': 'password',
+    }
+
     # Commit and push
     with open(r"settings/config.ini", "w") as file:
         config_file.write(file)

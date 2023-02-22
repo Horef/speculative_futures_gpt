@@ -1,3 +1,0 @@
-class PDF_Generator:
-    def __init__(self) -> None:
-        pass

@@ -3,7 +3,9 @@ from math import ceil
 from database import DatabaseManager as dbm
 import text_processing as tp
 
-from settings.generate_config import GenerateSettings as gs
+
+
+from settings.generate_config import generate_settings
 import configparser
 
 import openai
@@ -63,8 +65,9 @@ class Chat:
         return prompt
 
 if __name__ == "__main__":
-    settings = gs()
+    generate_settings()
     chat = Chat()
+
 
     if chat.db.clear:
         chat.db.clear_table()
