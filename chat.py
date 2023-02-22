@@ -3,7 +3,7 @@ from math import ceil
 from database import DatabaseManager as dbm
 import text_processing as tp
 
-
+from pdf.pdf_generator import PdfGenerator
 
 from settings.generate_config import generate_settings
 import configparser
