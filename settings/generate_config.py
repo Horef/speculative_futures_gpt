@@ -25,11 +25,12 @@ def generate_settings():
 
     # PDF Generator Settings section
     config_file['PDF Generator Settings'] = {
-        'pdf_name': 'output/chat_results.pdf',
+        'txt_name': 'pdf/chat_results.txt',
+        'pdf_name': 'pdf/chat_results.pdf',
         'document_title': 'Chat Results',
         'title': 'Chat Results',
-        'encryption': 'False',
-        'password': 'password',
+        'font_size': '14',
+        'dpi': '96'
     }
 
     # Commit and push

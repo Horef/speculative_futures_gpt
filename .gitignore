@@ -6,3 +6,10 @@ api_key.txt
 
 # Ignore pycache.
 __pycache__/
+
+# Ignore tests.
+*tests.py
+
+# Ignore generated pdfs.
+*.pdf
+chat_results.txt

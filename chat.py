@@ -67,7 +67,7 @@ class Chat:
 if __name__ == "__main__":
     generate_settings()
     chat = Chat()
-
+    pdf = PdfGenerator()
 
     if chat.db.clear:
         chat.db.clear_table()
@@ -81,16 +81,15 @@ if __name__ == "__main__":
     while name != "exit":
         text = input("Your opinion: ")
         chat.db.insert_db(name=name, text=tp.preprocess(text))
+        pdf.add_text(f"{name}: {text}")
 
         # Run GPT-3
         summarization = chat.generate_future(past=past, present=text)
         print(f"gpt3 returned: {summarization}")
         chat.db.insert_db(name="gpt3", text=tp.preprocess(summarization))
-
-        print("\nHistory: ")
-        history = chat.db.query_db()
-        for (id, name, text, timestamp) in history:
-            print(f"Id:{id}, time:{timestamp}, {name}: {text}")
+        pdf.add_text(f"gpt3: {summarization}\n\n")
 
         past = summarization
         name = input("\nName: ")
+    
+    pdf.save_pdf()
