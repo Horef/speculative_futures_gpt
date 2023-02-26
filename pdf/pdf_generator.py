@@ -21,11 +21,12 @@ class PdfGenerator():
         self.width, self.height = A4
         self.fontsize_pt = settings.getint('font_size')
         
-        tk.Frame().destroy()
+        root = tk.Tk()        
         font = TkFont.Font(family="Arial", size=self.fontsize_pt)
         char_length = font.measure("a")
         dpi = settings.getint('dpi')
         self.char_length_pt = char_length * 72 / dpi
+        root.destroy()
 
         self.width_chars = math.ceil(self.width / self.char_length_pt)
         margin_bottom_pt = 10

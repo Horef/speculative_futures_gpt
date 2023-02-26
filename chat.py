@@ -81,7 +81,7 @@ if __name__ == "__main__":
     while name != "exit":
         text = input("Your opinion: ")
         chat.db.insert_db(name=name, text=tp.preprocess(text))
-        pdf.add_text(f"{name}: {text}")
+        pdf.add_text(f"{name}: {text}\n")
 
         # Run GPT-3
         summarization = chat.generate_future(past=past, present=text)
